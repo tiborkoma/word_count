@@ -22,7 +22,7 @@ public class TextAnalysisServiceTest {
         textAnalysisService = new TextAnalysisService(input -> Collections.emptyList(), STOP_WORDS);
         var result = textAnalysisService.analyze(() -> null);
 
-        assertEquals(new TextAnalysis(0, 0, 0d, listOf()), result);
+        assertEquals(new TextAnalysis(0, 0d, listOf()), result);
     }
 
     @Test
@@ -30,7 +30,7 @@ public class TextAnalysisServiceTest {
         textAnalysisService = new TextAnalysisService(input -> SPLITTED_WORDS, STOP_WORDS);
         var result = textAnalysisService.analyze(() -> null);
 
-        assertEquals(new TextAnalysis(5, 3, 1d, listOf("c", "d", "e")), result);
+        assertEquals(new TextAnalysis(5, 1d, listOf("c", "d", "e")), result);
     }
 
     @Test
@@ -39,7 +39,6 @@ public class TextAnalysisServiceTest {
         var result = textAnalysisService.analyze(() -> null);
 
         assertEquals(4, result.wordCount());
-        assertEquals(4, result.uniqueWordCount());
         assertEquals(4.25d, 0d, result.averageWordLength());
         assertEquals(listOf("had", "lamb", "little", "Mary"), result.countedWordsIndex());
     }

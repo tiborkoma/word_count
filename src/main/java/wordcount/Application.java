@@ -2,22 +2,27 @@ package wordcount;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
+import java.util.Set;
 
 public class Application {
 
     private final OptionsParser optionsParser;
-    private final TextAnalysisViewRenderer textAnalysisViewRenderer;
+    private final DictionaryParser dictionaryParser;
+    private final TextAnalysisViewRendererFactory textAnalysisViewRendererFactory;
     private final TextAnalysisService textAnalysisService;
     private final InputReaderFactory inputReaderFactory;
 
     public Application(
             OptionsParser optionsParser,
-            TextAnalysisViewRenderer textAnalysisViewRenderer,
+            DictionaryParser dictionaryParser,
+            TextAnalysisViewRendererFactory textAnalysisViewRendererFactory,
             TextAnalysisService textAnalysisService,
             InputReaderFactory inputReaderFactory
     ) {
         this.optionsParser = optionsParser;
-        this.textAnalysisViewRenderer = textAnalysisViewRenderer;
+        this.dictionaryParser = dictionaryParser;
+        this.textAnalysisViewRendererFactory = textAnalysisViewRendererFactory;
         this.textAnalysisService = textAnalysisService;
         this.inputReaderFactory = inputReaderFactory;
     }
@@ -26,13 +31,21 @@ public class Application {
         var options = optionsParser.parse(args);
         var inputReader = inputReaderFactory.getInstance(options.inputFile().orElse(null));
         var textAnalysis = textAnalysisService.analyze(inputReader);
-        textAnalysisViewRenderer.render(new TextAnalysisViewModel(textAnalysis, options.index()));
+        var dictionary = options.dictionary().map(this::makeDictionary).orElse(null);
+        var textAnalysisRenderer = textAnalysisViewRendererFactory.getInstance(dictionary);
+        textAnalysisRenderer.render(new TextAnalysisViewModel(textAnalysis, options.index()));
+    }
+
+    private Set<String> makeDictionary(String dictionaryPath) {
+        var dictionaryInputReader = new FileInputReader(Paths.get(dictionaryPath));
+        return dictionaryParser.parse(dictionaryInputReader);
     }
 
     public static void main(String[] args) {
         new Application(
                 CompositionRoot.getOptionsParser(),
-                CompositionRoot.getTextAnalysisViewRenderer(),
+                CompositionRoot.getDictionaryProvider(),
+                CompositionRoot.getTextAnalysisViewRendererFactory(),
                 CompositionRoot.getTextAnalysisService(),
                 CompositionRoot.getInputReaderFactory()
         ).run(args);
@@ -54,8 +67,8 @@ class CompositionRoot {
         return new OptionsParser();
     }
 
-    public static TextAnalysisViewRenderer getTextAnalysisViewRenderer() {
-        return new TextAnalysisViewRenderer();
+    public static TextAnalysisViewRendererFactory getTextAnalysisViewRendererFactory() {
+        return new TextAnalysisViewRendererFactory();
     }
 
     public static TextAnalysisService getTextAnalysisService() {
@@ -64,6 +77,10 @@ class CompositionRoot {
 
     public static InputReaderFactory getInputReaderFactory() {
         return new InputReaderFactory();
+    }
+
+    public static DictionaryParser getDictionaryProvider() {
+        return new DictionaryParser(WORD_SPLITTER);
     }
 
     private static URI getStopwordsFileResourceUri() {

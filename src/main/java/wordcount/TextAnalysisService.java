@@ -26,6 +26,6 @@ class TextAnalysisService {
 
         var averageWordLength = countedWords.stream().mapToInt(String::length).average().orElse(0);
 
-        return new TextAnalysis(countedWords.size(), countedWordsIndex.size(), averageWordLength, countedWordsIndex);
+        return new TextAnalysis(countedWords.size(), averageWordLength, countedWordsIndex);
     }
 }
