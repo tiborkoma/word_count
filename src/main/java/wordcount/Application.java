@@ -1,28 +1,51 @@
 package wordcount;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 public class Application {
 
-    private final InputReader consoleInputReader = new ConsoleInputReader();
-    private final WordSplitter wordSplitter = new WordSplitter();
-    private final StopWordsProvider stopWordsProvider = new StopWordsProvider(
-            new ResourceFileReader("/stopwords.txt"),
-            wordSplitter
-    );
+    private final TextAnalysisService textAnalysisService = CompositionRoot.getTextAnalysisService();
+    private final InputReaderFactory inputReaderFactory = CompositionRoot.getInputReaderFactory();
 
-    private final TextAnalysisService textAnalysisService = new TextAnalysisService(
-            wordSplitter,
-            stopWordsProvider.get()
-    );
-
-    public void run() {
+    public void run(String[] args) {
         System.out.print("Enter text: ");
 
-        var textAnalysis = textAnalysisService.analyze(consoleInputReader);
+        var inputReader = inputReaderFactory.getInstance(args.length > 0 ? args[0] : null);
+        var textAnalysis = textAnalysisService.analyze(inputReader);
 
         System.out.println("Number of words: " + textAnalysis.wordCount());
     }
 
     public static void main(String[] args) {
-        new Application().run();
+        new Application().run(args);
+    }
+}
+
+class CompositionRoot {
+    private CompositionRoot() {
+    }
+
+    public static final URI STOPWORDS_FILE_RESOURCE_URI = getStopwordsFileResourceUri();
+    public static final WordSplitter WORD_SPLITTER = new WordSplitter();
+    public static final StopWordsProvider STOP_WORDS_PROVIDER = new StopWordsProvider(
+            new FileInputReader(STOPWORDS_FILE_RESOURCE_URI),
+            WORD_SPLITTER
+    );
+
+    public static TextAnalysisService getTextAnalysisService() {
+        return new TextAnalysisService(WORD_SPLITTER, STOP_WORDS_PROVIDER.get());
+    }
+
+    public static InputReaderFactory getInputReaderFactory() {
+        return new InputReaderFactory();
+    }
+
+    private static URI getStopwordsFileResourceUri() {
+        try {
+            return FileInputReader.class.getResource("/stopwords.txt").toURI();
+        } catch (URISyntaxException e) {
+            throw new WordCountException(e);
+        }
     }
 }

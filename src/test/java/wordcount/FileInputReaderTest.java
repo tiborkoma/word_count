@@ -4,11 +4,12 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class ResourceFileReaderTest {
+public class FileInputReaderTest {
 
     @Test
-    public void shouldReadStopWordsFile() {
-        var fileReader = new ResourceFileReader("/stopwords.txt");
+    public void shouldReadStopWordsFile() throws Exception {
+        var fileReader = new FileInputReader(FileInputReader.class.getResource("/stopwords.txt").toURI());
+
         assertEquals("""
                         the
                         a
