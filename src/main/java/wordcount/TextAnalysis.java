@@ -1,6 +1,6 @@
 package wordcount;
 
-public record TextAnalysis(
+record TextAnalysis(
         int wordCount
 ) {
 }

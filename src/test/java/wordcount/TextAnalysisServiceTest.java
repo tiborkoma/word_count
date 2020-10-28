@@ -2,18 +2,20 @@ package wordcount;
 
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class TextAnalysisServiceTest {
+
+    private static final List<String> SPLITTED_WORDS = Arrays.asList("a", "b", "c", "d", "e");
+    private static final Set<String> STOP_WORDS = new HashSet(Arrays.asList("a", "b"));
 
     TextAnalysisService textAnalysisService;
 
     @Test
     public void shouldReturnCorrectAnalysisForNoWords() {
-        textAnalysisService = new TextAnalysisService(input -> Collections.emptyList());
+        textAnalysisService = new TextAnalysisService(input -> Collections.emptyList(), STOP_WORDS);
         var result = textAnalysisService.analyze(() -> null);
 
         assertEquals(result, new TextAnalysis(0));
@@ -21,10 +23,9 @@ public class TextAnalysisServiceTest {
 
     @Test
     public void shouldReturnCorrectAnalysisForListOfWords() {
-        var splitResult = Arrays.asList("a", "b", "c");
-        textAnalysisService = new TextAnalysisService(input -> splitResult);
+        textAnalysisService = new TextAnalysisService(input -> SPLITTED_WORDS, STOP_WORDS);
         var result = textAnalysisService.analyze(() -> null);
 
-        assertEquals(result, new TextAnalysis(splitResult.size()));
+        assertEquals(result, new TextAnalysis(3));
     }
 }

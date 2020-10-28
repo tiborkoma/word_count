@@ -3,6 +3,8 @@ package wordcount;
 import java.util.*;
 import java.util.function.Function;
 
+import static wordcount.Utils.listOf;
+
 class WordSplitter implements Function<String, Collection<String>> {
 
     public List<String> apply(String inputText) {
@@ -10,6 +12,6 @@ class WordSplitter implements Function<String, Collection<String>> {
             return Collections.emptyList();
         }
 
-        return Arrays.asList(inputText.split("\\W"));
+        return listOf(inputText.split("\\W"));
     }
 }
