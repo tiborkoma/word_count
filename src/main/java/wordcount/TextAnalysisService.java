@@ -1,6 +1,7 @@
 package wordcount;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -20,6 +21,8 @@ class TextAnalysisService {
         var inputTextWords = wordSplitter.andThen(wordFilter)
                 .apply(inputReader.readInput());
 
-        return new TextAnalysis(inputTextWords.size());
+        var uniqueInputTextWords = new HashSet<>(inputTextWords);
+
+        return new TextAnalysis(inputTextWords.size(), uniqueInputTextWords.size());
     }
 }

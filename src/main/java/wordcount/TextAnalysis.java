@@ -1,6 +1,7 @@
 package wordcount;
 
 record TextAnalysis(
-        int wordCount
+        int wordCount,
+        int uniqueWordCount
 ) {
 }

@@ -1,9 +1,12 @@
 package wordcount;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
-
-import static wordcount.Utils.listOf;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class WordSplitter implements Function<String, Collection<String>> {
 
@@ -12,6 +15,6 @@ class WordSplitter implements Function<String, Collection<String>> {
             return Collections.emptyList();
         }
 
-        return listOf(inputText.split("\\W"));
+        return Stream.of(inputText.split("\\W")).filter(s -> !s.isBlank()).collect(Collectors.toList());
     }
 }

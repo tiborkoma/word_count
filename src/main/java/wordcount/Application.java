@@ -14,7 +14,10 @@ public class Application {
         var inputReader = inputReaderFactory.getInstance(args.length > 0 ? args[0] : null);
         var textAnalysis = textAnalysisService.analyze(inputReader);
 
-        System.out.println("Number of words: " + textAnalysis.wordCount());
+        System.out.printf("Number of words: %d, unique: %d%n",
+                textAnalysis.wordCount(),
+                textAnalysis.uniqueWordCount()
+        );
     }
 
     public static void main(String[] args) {

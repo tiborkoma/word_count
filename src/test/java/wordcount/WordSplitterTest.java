@@ -2,10 +2,9 @@ package wordcount;
 
 import org.junit.Test;
 
-import java.util.Arrays;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static wordcount.Utils.listOf;
 
 public class WordSplitterTest {
 
@@ -13,8 +12,15 @@ public class WordSplitterTest {
 
     @Test
     public void shouldSplitStretchesOfLetters() {
-        var expected = Arrays.asList("Mary", "had", "a", "little", "lamb");
+        var expected = listOf("Mary", "had", "a", "little", "lamb");
         var actual = wordSplitter.apply("Mary had a little lamb");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldSplitStretchesOfLettersWithHyphens() {
+        var expected = listOf("Humpty", "Dumpty", "sat", "on", "a", "wall", "Humpty", "Dumpty", "had", "a", "great", "fall");
+        var actual = wordSplitter.apply("Humpty-Dumpty sat on a wall. Humpty-Dumpty had a great fall.");
         assertEquals(expected, actual);
     }
 
