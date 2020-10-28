@@ -2,7 +2,9 @@ package wordcount;
 
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static wordcount.Utils.listOf;
@@ -20,7 +22,7 @@ public class TextAnalysisServiceTest {
         textAnalysisService = new TextAnalysisService(input -> Collections.emptyList(), STOP_WORDS);
         var result = textAnalysisService.analyze(() -> null);
 
-        assertEquals(result, new TextAnalysis(0, 0, 0d));
+        assertEquals(new TextAnalysis(0, 0, 0d, listOf()), result);
     }
 
     @Test
@@ -28,14 +30,17 @@ public class TextAnalysisServiceTest {
         textAnalysisService = new TextAnalysisService(input -> SPLITTED_WORDS, STOP_WORDS);
         var result = textAnalysisService.analyze(() -> null);
 
-        assertEquals(result, new TextAnalysis(5, 3, 1d));
+        assertEquals(new TextAnalysis(5, 3, 1d, listOf("c", "d", "e")), result);
     }
 
     @Test
     public void shouldReturnCorrectAnalysisForListOfWordsSimpleAverage() {
-        textAnalysisService = new TextAnalysisService(input -> listOf("1", "12", "123", "1234"), STOP_WORDS);
+        textAnalysisService = new TextAnalysisService(input -> listOf("Mary", "had", "a", "little", "lamb"), STOP_WORDS);
         var result = textAnalysisService.analyze(() -> null);
 
-        assertEquals(result, new TextAnalysis(4, 4, 2.5d));
+        assertEquals(4, result.wordCount());
+        assertEquals(4, result.uniqueWordCount());
+        assertEquals(4.25d, 0d, result.averageWordLength());
+        assertEquals(listOf("had", "lamb", "little", "Mary"), result.countedWordsIndex());
     }
 }

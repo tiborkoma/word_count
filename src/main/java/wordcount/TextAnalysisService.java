@@ -1,7 +1,6 @@
 package wordcount;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -18,12 +17,15 @@ class TextAnalysisService {
     }
 
     public TextAnalysis analyze(InputReader inputReader) {
-        var inputTextWords = wordSplitter.andThen(wordFilter)
+        var countedWords = wordSplitter.andThen(wordFilter)
                 .apply(inputReader.readInput());
 
-        var uniqueInputTextWords = new HashSet<>(inputTextWords);
-        var averageWordLength = inputTextWords.stream().mapToInt(String::length).average().orElse(0);
+        var countedWordsIndex = countedWords.stream().distinct()
+                .sorted(String::compareToIgnoreCase)
+                .collect(Collectors.toList());
 
-        return new TextAnalysis(inputTextWords.size(), uniqueInputTextWords.size(), averageWordLength);
+        var averageWordLength = countedWords.stream().mapToInt(String::length).average().orElse(0);
+
+        return new TextAnalysis(countedWords.size(), countedWordsIndex.size(), averageWordLength, countedWordsIndex);
     }
 }

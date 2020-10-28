@@ -5,25 +5,34 @@ import java.net.URISyntaxException;
 
 public class Application {
 
-    private final OutputWriter outputWriter;
+    private final OptionsParser optionsParser;
+    private final TextAnalysisViewRenderer textAnalysisViewRenderer;
     private final TextAnalysisService textAnalysisService;
     private final InputReaderFactory inputReaderFactory;
 
-    public Application(OutputWriter outputWriter, TextAnalysisService textAnalysisService, InputReaderFactory inputReaderFactory) {
-        this.outputWriter = outputWriter;
+    public Application(
+            OptionsParser optionsParser,
+            TextAnalysisViewRenderer textAnalysisViewRenderer,
+            TextAnalysisService textAnalysisService,
+            InputReaderFactory inputReaderFactory
+    ) {
+        this.optionsParser = optionsParser;
+        this.textAnalysisViewRenderer = textAnalysisViewRenderer;
         this.textAnalysisService = textAnalysisService;
         this.inputReaderFactory = inputReaderFactory;
     }
 
     public void run(String[] args) {
-        var inputReader = inputReaderFactory.getInstance(args.length > 0 ? args[0] : null);
+        var options = optionsParser.parse(args);
+        var inputReader = inputReaderFactory.getInstance(options.inputFile().orElse(null));
         var textAnalysis = textAnalysisService.analyze(inputReader);
-        outputWriter.printAnalysis(textAnalysis);
+        textAnalysisViewRenderer.render(new TextAnalysisViewModel(textAnalysis, options.index()));
     }
 
     public static void main(String[] args) {
         new Application(
-                CompositionRoot.OUTPUT_WRITER,
+                CompositionRoot.getOptionsParser(),
+                CompositionRoot.getTextAnalysisViewRenderer(),
                 CompositionRoot.getTextAnalysisService(),
                 CompositionRoot.getInputReaderFactory()
         ).run(args);
@@ -34,14 +43,20 @@ class CompositionRoot {
     private CompositionRoot() {
     }
 
-    public static final URI STOPWORDS_FILE_RESOURCE_URI = getStopwordsFileResourceUri();
-    public static final WordSplitter WORD_SPLITTER = new WordSplitter();
-    public static final StopWordsProvider STOP_WORDS_PROVIDER = new StopWordsProvider(
+    private static final URI STOPWORDS_FILE_RESOURCE_URI = getStopwordsFileResourceUri();
+    private static final WordSplitter WORD_SPLITTER = new WordSplitter();
+    private static final StopWordsProvider STOP_WORDS_PROVIDER = new StopWordsProvider(
             new FileInputReader(STOPWORDS_FILE_RESOURCE_URI),
             WORD_SPLITTER
     );
 
-    public static final OutputWriter OUTPUT_WRITER = new OutputWriter();
+    public static OptionsParser getOptionsParser() {
+        return new OptionsParser();
+    }
+
+    public static TextAnalysisViewRenderer getTextAnalysisViewRenderer() {
+        return new TextAnalysisViewRenderer();
+    }
 
     public static TextAnalysisService getTextAnalysisService() {
         return new TextAnalysisService(WORD_SPLITTER, STOP_WORDS_PROVIDER.get());
