@@ -2,6 +2,7 @@ package wordcount;
 
 record TextAnalysis(
         int wordCount,
-        int uniqueWordCount
+        int uniqueWordCount,
+        double averageWordLength
 ) {
 }

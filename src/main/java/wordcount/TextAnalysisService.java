@@ -22,7 +22,8 @@ class TextAnalysisService {
                 .apply(inputReader.readInput());
 
         var uniqueInputTextWords = new HashSet<>(inputTextWords);
+        var averageWordLength = inputTextWords.stream().mapToInt(String::length).average().orElse(0);
 
-        return new TextAnalysis(inputTextWords.size(), uniqueInputTextWords.size());
+        return new TextAnalysis(inputTextWords.size(), uniqueInputTextWords.size(), averageWordLength);
     }
 }
