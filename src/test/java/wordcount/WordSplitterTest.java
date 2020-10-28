@@ -14,19 +14,19 @@ public class WordSplitterTest {
     @Test
     public void shouldSplitStretchesOfLetters() {
         var expected = Arrays.asList("Mary", "had", "a", "little", "lamb");
-        var actual = wordSplitter.split("Mary had a little lamb");
+        var actual = wordSplitter.apply("Mary had a little lamb");
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldReturnEmptyListForEmptyInput() {
-        var actual = wordSplitter.split("");
+        var actual = wordSplitter.apply("");
         assertTrue(actual.isEmpty());
     }
 
     @Test
     public void shouldReturnEmptyListForBlankInput() {
-        var actual = wordSplitter.split(" \t");
+        var actual = wordSplitter.apply(" \t");
         assertTrue(actual.isEmpty());
     }
 }

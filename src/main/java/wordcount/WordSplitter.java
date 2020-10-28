@@ -1,13 +1,11 @@
 package wordcount;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Function;
 
-class WordSplitter {
+class WordSplitter implements Function<String, Collection<String>> {
 
-    public List<String> split(String inputText) {
+    public List<String> apply(String inputText) {
         if (Objects.isNull(inputText) || inputText.trim().isBlank()) {
             return Collections.emptyList();
         }
