@@ -5,23 +5,28 @@ import java.net.URISyntaxException;
 
 public class Application {
 
-    private final TextAnalysisService textAnalysisService = CompositionRoot.getTextAnalysisService();
-    private final InputReaderFactory inputReaderFactory = CompositionRoot.getInputReaderFactory();
+    private final OutputWriter outputWriter;
+    private final TextAnalysisService textAnalysisService;
+    private final InputReaderFactory inputReaderFactory;
+
+    public Application(OutputWriter outputWriter, TextAnalysisService textAnalysisService, InputReaderFactory inputReaderFactory) {
+        this.outputWriter = outputWriter;
+        this.textAnalysisService = textAnalysisService;
+        this.inputReaderFactory = inputReaderFactory;
+    }
 
     public void run(String[] args) {
-        System.out.print("Enter text: ");
-
         var inputReader = inputReaderFactory.getInstance(args.length > 0 ? args[0] : null);
         var textAnalysis = textAnalysisService.analyze(inputReader);
-
-        System.out.printf("Number of words: %d, unique: %d%n",
-                textAnalysis.wordCount(),
-                textAnalysis.uniqueWordCount()
-        );
+        outputWriter.printAnalysis(textAnalysis);
     }
 
     public static void main(String[] args) {
-        new Application().run(args);
+        new Application(
+                CompositionRoot.OUTPUT_WRITER,
+                CompositionRoot.getTextAnalysisService(),
+                CompositionRoot.getInputReaderFactory()
+        ).run(args);
     }
 }
 
@@ -35,6 +40,8 @@ class CompositionRoot {
             new FileInputReader(STOPWORDS_FILE_RESOURCE_URI),
             WORD_SPLITTER
     );
+
+    public static final OutputWriter OUTPUT_WRITER = new OutputWriter();
 
     public static TextAnalysisService getTextAnalysisService() {
         return new TextAnalysisService(WORD_SPLITTER, STOP_WORDS_PROVIDER.get());

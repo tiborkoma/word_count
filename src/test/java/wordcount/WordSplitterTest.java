@@ -19,11 +19,16 @@ public class WordSplitterTest {
 
     @Test
     public void shouldSplitStretchesOfLettersWithHyphens() {
-        var expected = listOf("Humpty", "Dumpty", "sat", "on", "a", "wall", "Humpty", "Dumpty", "had", "a", "great", "fall");
+        var expected = listOf("Humpty-Dumpty", "sat", "on", "a", "wall", "Humpty-Dumpty", "had", "a", "great", "fall");
         var actual = wordSplitter.apply("Humpty-Dumpty sat on a wall. Humpty-Dumpty had a great fall.");
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void shouldReturnEmptyListForNullInput() {
+        var actual = wordSplitter.apply(null);
+        assertTrue(actual.isEmpty());
+    }
     @Test
     public void shouldReturnEmptyListForEmptyInput() {
         var actual = wordSplitter.apply("");
